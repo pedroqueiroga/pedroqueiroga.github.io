@@ -5,9 +5,9 @@ dragging = false;
 document.onmousemove = handleMouseMove;
 function handleMouseMove(event) {
     if (dragging && points.length > 0) {
-	requestAnimationFrame(draw);
 	points[possiblyClicked].x = event.clientX;
 	points[possiblyClicked].y = event.clientY;
+	requestAnimationFrame(draw);
     }
 }
 
@@ -17,7 +17,7 @@ document.onclick = function(event) {
 //	alert("Não vou colocar mais ponto de controle não.");
     //  } else {
     //    alert("click: " +  event.button + ", " + event.which);
-    requestAnimationFrame(draw);
+
     var clickedPoint = {x: event.clientX, y: event.clientY};
     if (event.clientX > 30 ||  event.clientY > 30) {
 	if (points.length > 0) {
@@ -67,6 +67,7 @@ document.onclick = function(event) {
 	    labelColor = "red";
     }	
     //}
+    requestAnimationFrame(draw);
 };
 
 // não aparecer o menu do botão direito do mouse.
@@ -74,7 +75,6 @@ document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
     // só o firefox não parece desabilitar o botão direito...
     if (typeof InstallTrigger === 'undefined') { // se não for o firefox
-	requestAnimationFrame(draw);
 	// faz o que faria no botão direito normalmente.
 	if (dragging) dragging = false;
 	else {
@@ -94,6 +94,7 @@ document.addEventListener('contextmenu', function(e) {
 	    } else
 		points.pop();
 	}
+	requestAnimationFrame(draw);
     }
 });
 var canvas, context, width, height
