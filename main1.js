@@ -120,21 +120,25 @@ function draw() {
     
     context.fillStyle = labelColor;
     context.fillRect(0, 0, tamanhoBloquinho, tamanhoBloquinho);
-    context.fillStyle = "black";
-    context.strokeStyle="black";
+    context.fillStyle = "gray";
+    context.strokeStyle="lightgray";
     for (var i = 0; i < points.length - 1; i += 1) {
 	context.beginPath();
 	context.moveTo(points[i].x, points[i].y);
 	context.lineTo(points[i+1].x, points[i+1].y);
 	context.stroke();
+	if (i == 0) context.fillStyle = "black";
+	else context.fillStyle = "gray";
 	labelPoint(points[i], "b" + i, labelColor);
     }
-    if (points.length > 0)
+    if (points.length > 0) {
+	context.fillStyle = "black";
 	labelPoint(points[points.length - 1], "b" + (points.length - 1), labelColor);
+    }
     
     var pFinal = {};
     var pFinalPrev = {};
-    context.strokeStyle="red";
+    context.strokeStyle="black";
     if (points.length > 0) {
 	pFinalPrev.x = points[0].x;
 	pFinalPrev.y = points[0].y;
@@ -151,8 +155,14 @@ function draw() {
     }
 
     for (var i = 0; i < points.length; i += 1) {
+	if (i == 0 || i == points.length - 1) {
+	    context.strokeStyle = context.fillStyle = "black";
+	} else {
+	    context.strokeStyle = context.fillStyle = "gray";
+	}
 	context.beginPath();
 	context.arc(points[i].x, points[i].y, raioPontinho, 0, Math.PI * 2, false);
+
 	context.fill();
     }
 //    requestAnimationFrame(draw);
