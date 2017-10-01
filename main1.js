@@ -75,25 +75,33 @@ document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
     // só o firefox não parece desabilitar o botão direito...
     if (typeof InstallTrigger === 'undefined') { // se não for o firefox
-	// faz o que faria no botão direito normalmente.
-	if (dragging) dragging = false;
-	else {
-	    var clickedPoint = {x: event.clientX, y: event.clientY};
-	    if (points.length > 0) {
-		possiblyClicked = 0;
-		var curDist = utils.distance(clickedPoint, points[0]);
-		for (var i = 1; i < points.length; i += 1) {
-		    if (utils.distance(clickedPoint, points[i]) < curDist) {
-			possiblyClicked = i;
-			curDist = utils.distance(clickedPoint, points[i]);
+	if (event.clientX > 30 ||  event.clientY > 30) {
+	    if (dragging) dragging = false;
+	    else {
+		var clickedPoint = {x: event.clientX, y: event.clientY};
+		if (points.length > 0) {
+		    possiblyClicked = 0;
+		    var curDist = utils.distance(clickedPoint, points[0]);
+		    for (var i = 1; i < points.length; i += 1) {
+			if (utils.distance(clickedPoint, points[i]) < curDist) {
+			    possiblyClicked = i;
+			    curDist = utils.distance(clickedPoint, points[i]);
+			}
 		    }
 		}
+		if (curDist < 40) {
+		    points.splice(possiblyClicked, 1);
+		} else
+		    points.pop();
 	    }
-	    if (curDist < 40) {
-		points.splice(possiblyClicked, 1);
-	    } else
-		points.pop();
-	}
+	} else if (event.clientX <= 15 && event.clientY <= 15) {
+	    if (labelColor === "red")
+		labelColor = "green";
+	    else if (labelColor === "green")
+		labelColor = "yellow";
+	    else if (labelColor === "yellow")
+		labelColor = "red";
+	}	
 	requestAnimationFrame(draw);
     }
 });
