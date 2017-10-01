@@ -2,6 +2,8 @@ points = [];
 var possiblyClicked;
 labelColor = "yellow";
 dragging = false;
+tamanhoBloquinho = 15;
+raioPontinho = 4;
 document.onmousemove = handleMouseMove;
 function handleMouseMove(event) {
     if (dragging && points.length > 0) {
@@ -11,16 +13,8 @@ function handleMouseMove(event) {
     }
 }
 
-document.onclick = function(event) {
-    //    alert("clicked on ("+ event.clientX + ", " + event.clientY + ")");
-   // if (points.length > pascal.length-1) {
-//	alert("Não vou colocar mais ponto de controle não.");
-    //  } else {
-    //    alert("click: " +  event.button + ", " + event.which);
-
-    var clickedPoint = {x: event.clientX, y: event.clientY};
-    if (event.clientX > 30 ||  event.clientY > 30) {
-	if (points.length > 0) {
+function atualizaPossiblyClicked(clickedPoint) {
+    if (points.length > 0) {
 	    possiblyClicked = 0;
 	    var curDist = utils.distance(clickedPoint, points[0]);
 	    for (var i = 1; i < points.length; i += 1) {
@@ -29,7 +23,30 @@ document.onclick = function(event) {
 		    curDist = utils.distance(clickedPoint, points[i]);
 		}
 	    }
-	}
+    }
+    return curDist
+}
+
+function trocaLabelColor() {
+    if (labelColor === "red")
+	labelColor = "green";
+    else if (labelColor === "green")
+	labelColor = "yellow";
+    else if (labelColor === "yellow")
+	labelColor = "red";
+}
+
+document.onclick = function(event) {
+    //    alert("clicked on ("+ event.clientX + ", " + event.clientY + ")");
+    // if (points.length > pascal.length-1) {
+    //	alert("Não vou colocar mais ponto de controle não.");
+    //  } else {
+    //    alert("click: " +  event.button + ", " + event.which);
+    
+    var clickedPoint = {x: event.clientX, y: event.clientY};
+    if (event.clientX > tamanhoBloquinho + 15 ||
+	event.clientY > tamanhoBloquinho + 15) {
+	var curDist = atualizaPossiblyClicked(clickedPoint);
 	var rightclick, leftclick;
 	if (!event) event = window.event;
 	if (event.which) {
@@ -42,29 +59,23 @@ document.onclick = function(event) {
 	if (leftclick) {
 	    if (dragging) {
 		dragging = false;
-		
-	    } else if (curDist < 6) {
+	    } else if (curDist < raioPontinho + 2) {
 		dragging = true;
-		
 	    } else {
 		points.push(clickedPoint);
 	    }
 	} else if (rightlick) {
 	    if (dragging) dragging = false;
 	    else {
-		if (curDist < 40) {
+		if (curDist < raioPontinho*11) {
 		    points.splice(possiblyClicked, 1);
 		} else
 		    points.pop();
 	    }
 	}
-    } else if (event.clientX <= 15 && event.clientY <= 15) {
-	if (labelColor === "red")
-	    labelColor = "green";
-	else if (labelColor === "green")
-	    labelColor = "yellow";
-	else if (labelColor === "yellow")
-	    labelColor = "red";
+    } else if (event.clientX <= tamanhoBloquinho &&
+	       event.clientY <= tamanhoBloquinho) {
+	trocaLabelColor();
     }	
     //}
     requestAnimationFrame(draw);
@@ -75,32 +86,20 @@ document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
     // só o firefox não parece desabilitar o botão direito...
     if (typeof InstallTrigger === 'undefined') { // se não for o firefox
-	if (event.clientX > 30 ||  event.clientY > 30) {
+	if (event.clientX > tamanhoBloquinho + 15 ||
+	    event.clientY > tamanhoBloquinho + 15) {
 	    if (dragging) dragging = false;
 	    else {
 		var clickedPoint = {x: event.clientX, y: event.clientY};
-		if (points.length > 0) {
-		    possiblyClicked = 0;
-		    var curDist = utils.distance(clickedPoint, points[0]);
-		    for (var i = 1; i < points.length; i += 1) {
-			if (utils.distance(clickedPoint, points[i]) < curDist) {
-			    possiblyClicked = i;
-			    curDist = utils.distance(clickedPoint, points[i]);
-			}
-		    }
-		}
-		if (curDist < 40) {
+		var curDist = atualizaPossiblyClicked(clickedPoint);
+		if (curDist < raioPontinho*11) {
 		    points.splice(possiblyClicked, 1);
 		} else
 		    points.pop();
 	    }
-	} else if (event.clientX <= 15 && event.clientY <= 15) {
-	    if (labelColor === "red")
-		labelColor = "green";
-	    else if (labelColor === "green")
-		labelColor = "yellow";
-	    else if (labelColor === "yellow")
-		labelColor = "red";
+	} else if (event.clientX <= tamanhoBloquinho &&
+		   event.clientY <= tamanhoBloquinho) {
+	    trocaLabelColor();
 	}	
 	requestAnimationFrame(draw);
     }
@@ -120,7 +119,7 @@ function draw() {
     context.clearRect(0, 0, width, height);
     
     context.fillStyle = labelColor;
-    context.fillRect(0, 0, 15, 15);
+    context.fillRect(0, 0, tamanhoBloquinho, tamanhoBloquinho);
     context.fillStyle = "black";
     context.strokeStyle="black";
     for (var i = 0; i < points.length - 1; i += 1) {
@@ -153,7 +152,7 @@ function draw() {
 
     for (var i = 0; i < points.length; i += 1) {
 	context.beginPath();
-	context.arc(points[i].x, points[i].y, 4, 0, Math.PI * 2, false);
+	context.arc(points[i].x, points[i].y, raioPontinho, 0, Math.PI * 2, false);
 	context.fill();
     }
 //    requestAnimationFrame(draw);
