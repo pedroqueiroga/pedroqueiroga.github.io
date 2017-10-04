@@ -142,7 +142,7 @@ function draw() {
     if (points.length > 0) {
 	pFinalPrev.x = points[0].x;
 	pFinalPrev.y = points[0].y;
-	for(var t = 0; t <= 1; t += 0.001) {
+	for(var t = 0; t <= 1; t += 0.0009765625) {
 	    utils.nBezier(points, t, pFinal);
 	    context.beginPath();
 	    context.moveTo(pFinalPrev.x, pFinalPrev.y);
