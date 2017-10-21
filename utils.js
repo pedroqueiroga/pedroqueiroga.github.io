@@ -22,6 +22,25 @@ var utils = {
 	return pFinal;
     },
 
+    nBezierv0: function(points, t, pFinal) {
+	pFinal = this.objCopy(points);
+	for (var i = 0; i < points.length - 1; i += 1) {
+	    for (var j = 0; j < (points.length - 1 - i); j += 1) {
+		pFinal[j].x = (1 - t)*pFinal[j].x + t*pFinal[j+1].x;
+		pFinal[j].y = (1 - t)*pFinal[j].y + t*pFinal[j+1].y;
+	    }
+	}
+	return pFinal[0];
+    },
+
+    objCopy: function(obj) {
+	var novoObj = [];
+	for (var i = 0; i < obj.length; i += 1) {
+	    novoObj.push({x: obj[i].x, y: obj[i].y});
+	}
+	return novoObj;
+    }
+
 }, pascal = [
     [1],
     [1, 1],

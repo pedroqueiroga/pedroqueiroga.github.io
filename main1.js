@@ -138,7 +138,7 @@ function draw() {
     
     var pFinal = {};
     var pFinalPrev = {};
-    context.strokeStyle="black";
+/*    context.strokeStyle="black";
     if (points.length > 0) {
 	pFinalPrev.x = points[0].x;
 	pFinalPrev.y = points[0].y;
@@ -151,6 +151,21 @@ function draw() {
 	    pFinalPrev.x = pFinal.x;
 	    pFinalPrev.y = pFinal.y;
 	    
+	}
+    }
+*/
+    context.strokeStyle="black";
+    if (points.length > 0) {
+	pFinalPrev.x = points[0].x;
+	pFinalPrev.y = points[0].y;
+	for(var t = 0; t <= 1; t += 0.0009765625) {
+	    pFinal = utils.nBezierv0(points, t, pFinal);
+	    context.beginPath();
+	    context.moveTo(pFinalPrev.x, pFinalPrev.y);
+	    context.lineTo(pFinal.x, pFinal.y);
+	    context.stroke();
+	    pFinalPrev.x = pFinal.x;
+	    pFinalPrev.y = pFinal.y;
 	}
     }
 
