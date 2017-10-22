@@ -1,4 +1,5 @@
 points = [];
+var hull = [];
 var possiblyClicked;
 labelColor = "yellow";
 dragging = false;
@@ -63,7 +64,13 @@ document.onclick = function(event) {
 		dragging = true;
 	    } else {
 		points.push(clickedPoint);
+		/*convexHull.insert(hull, {x: event.clientX, y: event.clientY});
+		console.log("current hull:");
+		for(var i = 0; i < hull.length; ++i){
+			console.log(hull[i]);
 	    }
+		console.log("----fin----");
+		}*/
 	} else if (rightlick) {
 	    if (dragging) dragging = false;
 	    else {
