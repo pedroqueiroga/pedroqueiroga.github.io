@@ -6,6 +6,7 @@ dragging = false;
 tamanhoBloquinho = 15;
 raioPontinho = 4;
 document.onmousemove = handleMouseMove;
+var resolucao = 0.0009765625;
 function handleMouseMove(event) {
     if (dragging && points.length > 0) {
 		var newpoints = points.slice();
@@ -125,7 +126,8 @@ document.addEventListener('contextmenu', function(e) {
 });
 var canvas, context, width, height
 window.onload = function() {
-    
+    resolucao=Math.max(parseFloat(prompt("Please enter your name","Harry Potter")),0.000244140625);
+	resolucao = isNaN(resolucao) ? 0.000244140625 : resolucao;
     canvas = document.getElementById("canvas");
     context = canvas.getContext("2d");
     width = canvas.width = window.innerWidth;
@@ -159,18 +161,21 @@ function draw() {
     var pFinalPrev = {};
     context.strokeStyle="black";
     if (points.length > 0) {
-	pFinalPrev.x = points[0].x;
-	pFinalPrev.y = points[0].y;
-	for(var t = 0; t <= 1; t += 0.0009765625) {
-	    utils.nBezier(points, t, pFinal);
-	    context.beginPath();
-	    context.moveTo(pFinalPrev.x, pFinalPrev.y);
-	    context.lineTo(pFinal.x, pFinal.y);
-	    context.stroke();
-	    pFinalPrev.x = pFinal.x;
-	    pFinalPrev.y = pFinal.y;
-	    
-	}
+		pFinalPrev.x = points[0].x;
+		pFinalPrev.y = points[0].y;
+		for(var t = 0; t <= 1; t += resolucao) {
+			utils.nBezier(points, t, pFinal);
+			context.beginPath();
+			context.moveTo(pFinalPrev.x, pFinalPrev.y);
+			context.lineTo(pFinal.x, pFinal.y);
+			context.stroke();
+			pFinalPrev.x = pFinal.x;
+			pFinalPrev.y = pFinal.y;
+		}
+		context.beginPath();
+		context.moveTo(pFinalPrev.x, pFinalPrev.y);
+		context.lineTo(points[points.length-1].x, points[points.length-1].y);
+		context.stroke();
     }
 
     for (var i = 0; i < points.length; i += 1) {
