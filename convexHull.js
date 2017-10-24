@@ -43,16 +43,19 @@ var convexHull = {
 			var left_tan = 0;
 			var lpd_prior = this.line_point_distance(newpoint, hull[0], hull[hull.length - 1]);
 			var lpd_next  = this.line_point_distance(newpoint, hull[0], hull[1]);
-			var stepsize = Math.max(Math.floor(hull.length/2), 1);
+			var stepsize = 1;//Math.max(Math.floor(hull.length/2), 1);
 			
 			while (Math.max(lpd_prior, lpd_next) > 0 && counter <= hull.length) {
-				if(Math.min(lpd_prior, lpd_next) < 0)
+				//in case we find the other tangent
+				//if(lpd_prior < 0 && lpd_next < 0) {
+				//	counter = 0;
+				//}
 				
-				if (lpd_prior > 0) {
+				//if (lpd_prior > 0) {
 					left_tan = (left_tan + hull.length - stepsize)%hull.length;
-				} else {
-					left_tan = (left_tan               + stepsize)%hull.length;
-				}
+				//} else {
+				//	left_tan = (left_tan               + stepsize)%hull.length;
+				//}
 				lpd_prior = this.line_point_distance(newpoint, hull[left_tan], hull[(left_tan + hull.length - 1)%hull.length]);
 				lpd_next  = this.line_point_distance(newpoint, hull[left_tan], hull[(left_tan               + 1)%hull.length]);
 				counter += stepsize;
@@ -65,14 +68,18 @@ var convexHull = {
 			var right_tan = 0;
 			lpd_prior = this.line_point_distance(newpoint, hull[0], hull[hull.length - 1]);
 			lpd_next  = this.line_point_distance(newpoint, hull[0], hull[1]);
-			stepsize = Math.max(Math.floor(hull.length/2), 1);
+			stepsize = 1;//Math.max(Math.floor(hull.length/2), 1);
 			
 			while (Math.min(lpd_prior, lpd_next) < 0) {
-				if (lpd_prior < 0) {
+				//if(lpd_prior > 0 && lpd_next > 0) {
+				//	counter = 0;
+				//}
+				
+				//if (lpd_prior < 0) {
 					right_tan = (right_tan + hull.length - stepsize)%hull.length;
-				} else {
-					right_tan = (right_tan               + stepsize)%hull.length;
-				}
+				//} else {
+				//	right_tan = (right_tan               + stepsize)%hull.length;
+				//}
 				lpd_prior = this.line_point_distance(newpoint, hull[right_tan], hull[(right_tan + hull.length - 1)%hull.length]);
 				lpd_next  = this.line_point_distance(newpoint, hull[right_tan], hull[(right_tan               + 1)%hull.length]);
 				stepsize = Math.max(Math.floor(stepsize/2), 1);
