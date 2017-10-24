@@ -4,6 +4,7 @@ var convexHull = {
 	},
 	
 	insert: function(hull, newpoint) {
+		debugger;
 		if (hull.length < 2) { //trivial
 			hull.push(newpoint);
 		} else if (hull.length === 2) {	//special case
@@ -15,7 +16,7 @@ var convexHull = {
 				hull.splice(1,0,newpoint);
 			}
 		} else {
-			debugger;
+			/*
 			//checking if the point is inside or outside the present hull
 			//finding a subhull which must contain the point if the main hull contains it
 			var within = true;
@@ -35,15 +36,18 @@ var convexHull = {
 			within = within && (this.line_point_distance(subhull[2], subhull[0], newpoint) > 0);
 			
 			//within the hull? nice, bye
-			if (within) return;
+			if (within) return;*/
 			
 			//calculating tangent points
+			var counter = 0;
 			var left_tan = 0;
 			var lpd_prior = this.line_point_distance(newpoint, hull[0], hull[hull.length - 1]);
 			var lpd_next  = this.line_point_distance(newpoint, hull[0], hull[1]);
 			var stepsize = Math.max(Math.floor(hull.length/2), 1);
 			
-			while (Math.max(lpd_prior, lpd_next) > 0) {
+			while (Math.max(lpd_prior, lpd_next) > 0 && counter <= hull.length) {
+				if(Math.min(lpd_prior, lpd_next) < 0)
+				
 				if (lpd_prior > 0) {
 					left_tan = (left_tan + hull.length - stepsize)%hull.length;
 				} else {
@@ -51,13 +55,17 @@ var convexHull = {
 				}
 				lpd_prior = this.line_point_distance(newpoint, hull[left_tan], hull[(left_tan + hull.length - 1)%hull.length]);
 				lpd_next  = this.line_point_distance(newpoint, hull[left_tan], hull[(left_tan               + 1)%hull.length]);
+				counter += stepsize;
 				stepsize = Math.max(Math.floor(stepsize/2), 1);
 			}
+			
+			//within the hull? nice, bye
+			if (counter > hull.length) return;
 			
 			var right_tan = 0;
 			lpd_prior = this.line_point_distance(newpoint, hull[0], hull[hull.length - 1]);
 			lpd_next  = this.line_point_distance(newpoint, hull[0], hull[1]);
-			stepsize = Math.floor(hull.length/2);
+			stepsize = Math.max(Math.floor(hull.length/2), 1);
 			
 			while (Math.min(lpd_prior, lpd_next) < 0) {
 				if (lpd_prior < 0) {
@@ -111,16 +119,16 @@ var convexHull = {
 		//categorizing the control points
 		var hi_p = -1;
 		var high = 0.0;
-		var p2a = [];
+		var p2i = [];
 		for (var i = 0; i < poinsettia.length; ++i) {
 			var point = poinsettia[i];
 			var lpd = this.line_point_distance(p2, p1, point);
 			if (lpd > high) {
 				high = lpd;
-				if (hi_p != -1) p2r.push(hi_p);
+				if (hi_p != -1) p2i.push(hi_p);
 				hi_p = point;
 			} else if (lpd > 0) {
-				p2a.push(point)
+				p2i.push(point)
 			}
 		}
 		
@@ -129,8 +137,8 @@ var convexHull = {
 		
 		//this is somewhat dangerous
 		var subhull = [p1,hi_p,p2];
-		for (var i = 0; i < p2a.length; ++i) {
-			var point = p2a[i];
+		for (var i = 0; i < p2i.length; ++i) {
+			var point = p2i[i];
 			this.insert(subhull, point);
 		}
 		//this too
