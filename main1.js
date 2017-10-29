@@ -98,14 +98,14 @@ document.onclick = function(event) {
 	    }
 	}
     } else if (event.clientX <= tamanhoBloquinho) {
-	bloquinhosLogic();
+	bloquinhosLogic(event);
     }
     requestAnimationFrame(draw);
 };
 
 // não aparecer o menu do botão direito do mouse.
-document.addEventListener('contextmenu', function(e) {
-    e.preventDefault();
+document.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
     // só o firefox não parece desabilitar o botão direito...
     if (typeof InstallTrigger === 'undefined') { // se não for o firefox
 	if (event.clientX > tamanhoBloquinho + 15 ||
@@ -124,26 +124,26 @@ document.addEventListener('contextmenu', function(e) {
 		convexHull.remove(hull, points, p);
 	    }
 	} else if (event.clientX <= tamanhoBloquinho) {
-	    bloquinhosLogic();
+	    bloquinhosLogic(event);
 	}
 	requestAnimationFrame(draw);
     }
 });
 
-function bloquinhosLogic() {
-    if (event.clientY <= tamanhoBloquinho) {
+function bloquinhosLogic(e) {
+    if (e.clientY <= tamanhoBloquinho) {
 	trocaLabelColor();
-    } else if (event.clientY <= tamanhoBloquinho + 30 && event.clientY > tamanhoBloquinho) {
+    } else if (e.clientY <= tamanhoBloquinho + 30 && e.clientY > tamanhoBloquinho) {
 	cpFillStyle = trocaFillStyle(cpFillStyle);
-    } else if (event.clientY <= tamanhoBloquinho + 60 && event.clientY > tamanhoBloquinho + 30) {
+    } else if (e.clientY <= tamanhoBloquinho + 60 && e.clientY > tamanhoBloquinho + 30) {
 	hullFillStyle = trocaFillStyle(hullFillStyle);
-    } else if (event.clientY <= tamanhoBloquinho + 90 && event.clientY > tamanhoBloquinho + 60) {
+    } else if (e.clientY <= tamanhoBloquinho + 90 && e.clientY > tamanhoBloquinho + 60) {
 	polygonFillStyle = trocaFillStyle(polygonFillStyle);
-    } else if (event.clientY <= tamanhoBloquinho + 115 && event.clientY > tamanhoBloquinho + 90) {
+    } else if (e.clientY <= tamanhoBloquinho + 115 && e.clientY > tamanhoBloquinho + 90) {
 	curveFillStyle = trocaFillStyle(curveFillStyle);
-    } else if (event.clientY <= tamanhoBloquinho + 140 && event.clientY > tamanhoBloquinho + 115) {
+    } else if (e.clientY <= tamanhoBloquinho + 140 && e.clientY > tamanhoBloquinho + 115) {
 	escolheRes();
-    } else if (event.clientY <= tamanhoBloquinho + 170 && event.clientY > tamanhoBloquinho + 140) {
+    } else if (e.clientY <= tamanhoBloquinho + 170 && e.clientY > tamanhoBloquinho + 140) {
 	hmmmFillStyle = trocaFillStyle(hmmmFillStyle);
     }
 }
