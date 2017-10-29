@@ -10,7 +10,7 @@ var utils = {
 	pFinal.x = 0;
 	pFinal.y = 0;
 	for (var i = 0; i < points.length; i += 1) {
-	    if (points.length > pascal.length) {
+	    while (points.length > pascal.length) {
 		extendPascal();
 	    }
 	    var temp = pascal[points.length - 1][i]
