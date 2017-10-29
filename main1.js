@@ -1,15 +1,21 @@
 points = [];
+var hull = [];
 var possiblyClicked;
 labelColor = "yellow";
 dragging = false;
 tamanhoBloquinho = 15;
 raioPontinho = 4;
 document.onmousemove = handleMouseMove;
+var resolucao = 0.0009765625;
 function handleMouseMove(event) {
     if (dragging && points.length > 0) {
-	points[possiblyClicked].x = event.clientX;
-	points[possiblyClicked].y = event.clientY;
-	requestAnimationFrame(draw);
+		var newpoints = points.slice();
+		newpoints.splice(possiblyClicked, 1);
+		convexHull.remove(hull, newpoints, points[possiblyClicked]);
+		points[possiblyClicked].x = event.clientX;
+		points[possiblyClicked].y = event.clientY;
+		convexHull.insert(hull, points[possiblyClicked]);
+		requestAnimationFrame(draw);
     }
 }
 
@@ -46,33 +52,43 @@ document.onclick = function(event) {
     var clickedPoint = {x: event.clientX, y: event.clientY};
     if (event.clientX > tamanhoBloquinho + 15 ||
 	event.clientY > tamanhoBloquinho + 15) {
-	var curDist = atualizaPossiblyClicked(clickedPoint);
-	var rightclick, leftclick;
-	if (!event) event = window.event;
-	if (event.which) {
-	    rightlick = (event.which == 3);
-	    leftclick = (event.which == 1);
-	} else if (event.button) {
-	    rightlick = (event.button == 2);
-	    leftclick = (event.button == 0);
-	}
-	if (leftclick) {
-	    if (dragging) {
-		dragging = false;
-	    } else if (curDist < raioPontinho + 2) {
-		dragging = true;
-	    } else {
-		points.push(clickedPoint);
-	    }
-	} else if (rightlick) {
-	    if (dragging) dragging = false;
-	    else {
-		if (curDist < raioPontinho*11) {
-		    points.splice(possiblyClicked, 1);
-		} else
-		    points.pop();
-	    }
-	}
+		var curDist = atualizaPossiblyClicked(clickedPoint);
+		var rightclick, leftclick;
+		if (!event) event = window.event;
+		if (event.which) {
+			rightlick = (event.which == 3);
+			leftclick = (event.which == 1);
+		} else if (event.button) {
+			rightlick = (event.button == 2);
+			leftclick = (event.button == 0);
+		}
+		if (leftclick) {
+			if (dragging) {
+				dragging = false;
+			} else if (curDist < raioPontinho + 2) {
+				dragging = true;
+			} else {
+				points.push(clickedPoint);
+				convexHull.insert(hull, {x: event.clientX, y: event.clientY});
+				console.log("current hull:");
+				for(var i = 0; i < hull.length; ++i){
+					console.log(hull[i]);
+				}
+				console.log("----fin----");
+			}
+		} else if (rightlick) {
+			if (dragging) dragging = false;
+			else {
+				var p;
+				if (curDist < raioPontinho*11) {
+					var p = points[possiblyClicked];
+					points.splice(possiblyClicked, 1);
+				} else {
+					var p = points.pop();
+				}
+				convexHull.remove(hull, points, p);
+			}
+		}
     } else if (event.clientX <= tamanhoBloquinho &&
 	       event.clientY <= tamanhoBloquinho) {
 	trocaLabelColor();
@@ -86,27 +102,32 @@ document.addEventListener('contextmenu', function(e) {
     e.preventDefault();
     // só o firefox não parece desabilitar o botão direito...
     if (typeof InstallTrigger === 'undefined') { // se não for o firefox
-	if (event.clientX > tamanhoBloquinho + 15 ||
-	    event.clientY > tamanhoBloquinho + 15) {
-	    if (dragging) dragging = false;
-	    else {
-		var clickedPoint = {x: event.clientX, y: event.clientY};
-		var curDist = atualizaPossiblyClicked(clickedPoint);
-		if (curDist < raioPontinho*11) {
-		    points.splice(possiblyClicked, 1);
-		} else
-		    points.pop();
-	    }
-	} else if (event.clientX <= tamanhoBloquinho &&
-		   event.clientY <= tamanhoBloquinho) {
-	    trocaLabelColor();
-	}	
-	requestAnimationFrame(draw);
+		if (event.clientX > tamanhoBloquinho + 15 ||
+			event.clientY > tamanhoBloquinho + 15) {
+			if (dragging) dragging = false;
+			else {
+				var clickedPoint = {x: event.clientX, y: event.clientY};
+				var curDist = atualizaPossiblyClicked(clickedPoint);
+				var p;
+				if (curDist < raioPontinho*11) {
+					var p = points[possiblyClicked];
+					points.splice(possiblyClicked, 1);
+				} else {
+					var p = points.pop();
+				}
+				convexHull.remove(hull, points, p);
+			}
+		} else if (event.clientX <= tamanhoBloquinho &&
+			   event.clientY <= tamanhoBloquinho) {
+			trocaLabelColor();
+		}	
+		requestAnimationFrame(draw);
     }
 });
 var canvas, context, width, height
 window.onload = function() {
-    
+    resolucao=Math.max(parseFloat(prompt("Please enter your name","Harry Potter")),0.000244140625);
+	resolucao = isNaN(resolucao) ? 0.000244140625 : resolucao;
     canvas = document.getElementById("canvas");
     context = canvas.getContext("2d");
     width = canvas.width = window.innerWidth;
@@ -140,18 +161,21 @@ function draw() {
     var pFinalPrev = {};
 /*    context.strokeStyle="black";
     if (points.length > 0) {
-	pFinalPrev.x = points[0].x;
-	pFinalPrev.y = points[0].y;
-	for(var t = 0; t <= 1; t += 0.0009765625) {
-	    utils.nBezier(points, t, pFinal);
-	    context.beginPath();
-	    context.moveTo(pFinalPrev.x, pFinalPrev.y);
-	    context.lineTo(pFinal.x, pFinal.y);
-	    context.stroke();
-	    pFinalPrev.x = pFinal.x;
-	    pFinalPrev.y = pFinal.y;
-	    
-	}
+		pFinalPrev.x = points[0].x;
+		pFinalPrev.y = points[0].y;
+		for(var t = 0; t <= 1; t += resolucao) {
+			utils.nBezier(points, t, pFinal);
+			context.beginPath();
+			context.moveTo(pFinalPrev.x, pFinalPrev.y);
+			context.lineTo(pFinal.x, pFinal.y);
+			context.stroke();
+			pFinalPrev.x = pFinal.x;
+			pFinalPrev.y = pFinal.y;
+		}
+		context.beginPath();
+		context.moveTo(pFinalPrev.x, pFinalPrev.y);
+		context.lineTo(points[points.length-1].x, points[points.length-1].y);
+		context.stroke();
     }
 */
     context.strokeStyle="black";
@@ -181,6 +205,21 @@ function draw() {
 	context.fill();
     }
 //    requestAnimationFrame(draw);
+
+
+	if(hull.length > 0) {
+		context.strokeStyle="pink";
+		for (var i = 0; i < hull.length - 1; i += 1) {
+			context.beginPath();
+			context.moveTo(hull[i].x, hull[i].y);
+			context.lineTo(hull[i+1].x, hull[i+1].y);
+			context.stroke();
+		}
+		context.beginPath();
+		context.moveTo(hull[hull.length - 1].x, hull[hull.length - 1].y);
+		context.lineTo(hull[0].x, hull[0].y);
+		context.stroke();
+	}
 }
 
 function labelPoint(p, name, color) {
