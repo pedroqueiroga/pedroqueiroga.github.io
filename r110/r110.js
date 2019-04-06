@@ -11,8 +11,9 @@ window.onload = function() {
 		      height, gridSize);
 //    myMap.drawGrid();
 
-    playing = false;
-}
+    playing = true;
+    Draw.play();
+};
 
 var Draw = {
     play: function() {
@@ -70,4 +71,4 @@ var Draw = {
 window.onclick = function() {
     debugger;
     (currentLine == gridHeight - 1) ? (myMap.clear() && (currentLine = 0)) : ((playing == true) ? Draw.pause() : Draw.play());
-}
+};
