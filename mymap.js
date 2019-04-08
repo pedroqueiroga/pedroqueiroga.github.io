@@ -36,14 +36,16 @@ function findPixel(square) {
 	    y: square.y * this.gridSize};
 }
 
-function paintSquare(sq) {
+function paintSquare(sq, color) {
+    color = color || "black";
     var pixel = this.findPixel(sq);
     context.beginPath();
     context.rect(pixel.x, pixel.y,
 		 this.gridSize,
 		 this.gridSize);
-    context.fillStyle = "black";
+    context.fillStyle = color;
     context.fill();
+    context.fillStyle = "black";
 }
 
 function clearSquare(sq) {
@@ -55,6 +57,18 @@ function clearSquare(sq) {
     context.fillStyle = "white";
     context.fill();
     context.fillStyle = "black";
+}
+
+function isRed(sq) {
+    var pixel = this.findPixel(sq);
+    var color = context.getImageData(pixel.x + 1,
+                                     pixel.y + 1,
+                                     1, 1);
+
+    return (color.data[0] == 255 &&
+	    color.data[1] == 0 &&
+	    color.data[2] == 0 &&
+	    color.data[3] == 255) ? true : false;
 }
 
 function isBlack(sq) {
@@ -130,6 +144,7 @@ MyMap.prototype = {
     clearSquare: clearSquare,
     findPixel: findPixel,
     drawAnt: drawAnt,
+    isRed: isRed,
     isBlack: isBlack,
     clear: clear
 }
