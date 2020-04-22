@@ -4,8 +4,7 @@ const myPoints = [
   [200, 300],
   [100, 300],
 ];
-var len = myPoints.length;
-var i = 0;
+var frameIdx = 0;
 var buttonAdd, buttonNext, buttonPrev;
 var cnv;
 var pointSize = 10;
@@ -28,9 +27,8 @@ function setup() {
 }
 
 function draw() {
-  len = myPoints.length;
   background(190);
-  drawClosedCurveVertex(myPoints, i);
+  drawClosedCurveVertex(myPoints, frameIdx);
   drawLabels(myPoints);
 }
 
@@ -39,6 +37,10 @@ function mouseClicked() {
     const i = getPoint(mouseX, mouseY);
     if (i !== false) {
       myPoints.splice(i, 1);
+      if (frameIdx >= myPoints.length) {
+        // cap i if it exceeds maximum length now.
+        frameIdx = myPoints.length - 1;
+      }
       return;
     }
     myPoints.push([mouseX, mouseY]);
@@ -66,14 +68,14 @@ function isPointInCanvas(x, y) {
 }
 
 function nextFrame() {
-  if (++i >= len) {
-    i = len - 1;
+  if (++frameIdx >= myPoints.length) {
+    frameIdx = myPoints.length - 1;
   }
 }
 
 function prevFrame() {
-  if (--i < 0) {
-    i = 0;
+  if (--frameIdx < 0) {
+    frameIdx = 0;
   }
 }
 
