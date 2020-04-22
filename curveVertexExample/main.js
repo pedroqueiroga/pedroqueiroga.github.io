@@ -5,15 +5,9 @@ const myPoints = [
   [100, 300],
 ];
 var len = myPoints.length;
-
 var i = 0;
-
-var input;
-
 var buttonAdd, buttonNext, buttonPrev;
-
 var cnv;
-
 var pointSize = 10;
 
 function setup() {
@@ -30,14 +24,14 @@ function setup() {
   buttonNext.mousePressed(nextFrame);
 
   background(190);
-  draw_labels(myPoints);
+  drawLabels(myPoints);
 }
 
 function draw() {
   len = myPoints.length;
   background(190);
-  draw_closed_curve_vertex(myPoints, i);
-  draw_labels(myPoints);
+  drawClosedCurveVertex(myPoints, i);
+  drawLabels(myPoints);
 }
 
 function mouseClicked() {
@@ -71,21 +65,6 @@ function isPointInCanvas(x, y) {
   return true;
 }
 
-function addPoint() {
-  const val = input.value();
-  console.log(val);
-  val.split(',');
-  console.log(val);
-  const x = val[0];
-  const y = val[1];
-
-  if (x == parseInt(x, 10) && y == parseInt(y, 10)) {
-    myPoints.push([x, y]);
-    reset_drawing();
-  }
-  input.value('');
-}
-
 function nextFrame() {
   if (++i >= len) {
     i = len - 1;
@@ -98,13 +77,7 @@ function prevFrame() {
   }
 }
 
-function reset_drawing() {
-  i = 0;
-  background(190);
-  draw_labels(myPoints);
-}
-
-function draw_closed_curve_vertex(myPoints, max) {
+function drawClosedCurveVertex(myPoints, max) {
   if (myPoints.length < 2) return;
   let usedPoints = [];
   beginShape();
@@ -143,11 +116,11 @@ function draw_closed_curve_vertex(myPoints, max) {
   stroke(0);
 
   for (var i = 0; i < usedPoints.length - 1; i++) {
-    draw_dotted_line(myPoints[usedPoints[i]], myPoints[usedPoints[i + 1]]);
+    drawDottedLine(myPoints[usedPoints[i]], myPoints[usedPoints[i + 1]]);
   }
 }
 
-function draw_labels(myPoints) {
+function drawLabels(myPoints) {
   strokeWeight(pointSize);
   for (const i in myPoints) {
     const myPoint = myPoints[+i];
@@ -165,7 +138,7 @@ function draw_labels(myPoints) {
   strokeWeight(1);
 }
 
-function draw_dotted_line(p1, p2) {
+function drawDottedLine(p1, p2) {
   let step = 1 / 10;
   stroke(100);
   strokeWeight(3);
